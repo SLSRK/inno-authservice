@@ -3,6 +3,7 @@ package com.innowise.authservice.service.impl;
 import com.innowise.authservice.model.entity.Role;
 import com.innowise.authservice.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,7 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.builder()
                 .subject(userId.toString())
                 .claim("role", role.name())
+                .claim("type", "ACCESS")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessExpiration * 60000))
                 .signWith(secretKey)
@@ -41,21 +43,28 @@ public class JwtServiceImpl implements JwtService {
     public String createRefreshToken(Long userId) {
         return Jwts.builder()
                 .subject(userId.toString())
+                .claim("type", "REFRESH")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshExpiration * 60000))
                 .signWith(secretKey)
                 .compact();
     }
 
-    public Claims validateToken(String token) {
-        return Jwts.parser()
+    public Claims validateToken(String token, String requiredType) {
+        Claims claims = Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+
+        if (!requiredType.equals(claims.get("type", String.class))) {
+            throw new JwtException("Invalid token type");
+        }
+
+        return claims;
     }
 
-    public Long getUserId(String token) {
-        return Long.valueOf(validateToken(token).getSubject());
+    public Long getUserId(String token, String tokenType) {
+        return Long.valueOf(validateToken(token, tokenType).getSubject());
     }
 }

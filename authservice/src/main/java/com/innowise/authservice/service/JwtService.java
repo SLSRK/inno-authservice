@@ -22,14 +22,16 @@ public interface JwtService {
     /**
      * Checks token for validity;
      * @param token token of the user logged in;
+     * @param requiredType expected token type;
      * @return returns token is valid or not.
      */
-    Claims validateToken(String token);
+    Claims validateToken(String token, String requiredType);
 
     /**
      * Getting user id from refresh token;
      * @param token refresh token;
+     * @param tokenType token type;
      * @return returns user id.
      */
-    Long getUserId(String token);
+    Long getUserId(String token, String tokenType);
 }

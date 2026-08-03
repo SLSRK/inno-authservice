@@ -21,7 +21,7 @@ public class JtwServiceUnitTest {
 
     @BeforeEach
     void setUp() {
-        String secret = "eyJhbGciOiJIUzM4NCJ9eyJzdWIiOiIyIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODU2OTM4NDMsImV4cCI6MTc4NTY5NDc0M30";
+        String secret = "jwt-secret-for-test-JzdWIiOiI1Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODU3NTM1MjAsImV4cC";
         jwtService = new JwtServiceImpl(secret, 15, 60);
     }
 
@@ -31,7 +31,7 @@ public class JtwServiceUnitTest {
 
         assertThat(token).isNotBlank();
 
-        var claims = jwtService.validateToken(token);
+        var claims = jwtService.validateToken(token, "ACCESS");
 
         assertThat(claims.getSubject()).isEqualTo("1");
         assertThat(claims.get("role", String.class)).isEqualTo("USER");
@@ -43,7 +43,7 @@ public class JtwServiceUnitTest {
 
         assertThat(token).isNotBlank();
 
-        var claims = jwtService.validateToken(token);
+        var claims = jwtService.validateToken(token, "REFRESH");
 
         assertThat(claims.getSubject()).isEqualTo("5");
     }
@@ -52,7 +52,7 @@ public class JtwServiceUnitTest {
     void shouldGetUserId() {
         String token = jwtService.createAccessToken(42L, Role.ADMIN);
 
-        Long userId = jwtService.getUserId(token);
+        Long userId = jwtService.getUserId(token, "ACCESS");
 
         assertThat(userId).isEqualTo(42L);
     }
@@ -60,7 +60,7 @@ public class JtwServiceUnitTest {
     @Test
     void shouldFailOnInvalidToken() {
         assertThatThrownBy(() ->
-                jwtService.validateToken("invalid.token")
+                jwtService.validateToken("invalid.token", "REFRESH")
         ).isInstanceOf(Exception.class);
     }
 

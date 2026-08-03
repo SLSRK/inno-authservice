@@ -5,6 +5,7 @@ import com.innowise.authservice.model.dto.LoginRequestDto;
 import com.innowise.authservice.model.dto.RefreshRequestDto;
 import com.innowise.authservice.model.dto.RegisterRequestDto;
 import com.innowise.authservice.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,19 +23,19 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public void register(@RequestBody RegisterRequestDto registerRequestDto) {
+    public void register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
         authService.register(registerRequestDto);
     }
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public AuthResponseDto login(@RequestBody LoginRequestDto loginRequestDto) {
+    public AuthResponseDto login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         return authService.login(loginRequestDto);
     }
 
     @PostMapping("/refresh")
     @ResponseStatus(HttpStatus.OK)
-    public AuthResponseDto refresh(@RequestBody RefreshRequestDto refreshRequestDto) {
+    public AuthResponseDto refresh(@Valid @RequestBody RefreshRequestDto refreshRequestDto) {
         return authService.refresh(refreshRequestDto.refreshToken());
     }
 }

@@ -36,16 +36,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     public void register(RegisterRequestDto registerRequestDto) {
-        log.debug("Creating a new user with login={}, role={}, password={}, email={}",
+        log.debug("Creating a new user with login={}, role={}, email={}",
                 registerRequestDto.login(),
                 registerRequestDto.role(),
-                registerRequestDto.password().replaceAll(".(?=..)", "*"),
                 registerRequestDto.userRequestDto().email());
-        AuthUser newUser = new AuthUser();
+        AuthUser user = new AuthUser();
 
-        newUser.setLogin(registerRequestDto.login());
-        newUser.setPassword(passwordEncoder.encode(registerRequestDto.password()));
-        newUser.setRole(Role.valueOf(registerRequestDto.role()));
+        user.setLogin(registerRequestDto.login());
+        user.setPassword(passwordEncoder.encode(registerRequestDto.password()));
+        user.setRole(Role.valueOf(registerRequestDto.role()));
 
         UserRequestDto userRequestDto = registerRequestDto.userRequestDto();
         UserResponseDto userResponseDto;
@@ -55,10 +54,15 @@ public class AuthServiceImpl implements AuthService {
         } catch (Exception e) {
             throw new RegistrationException("Registration failed:" + e);
         }
-        newUser.setUserId(userResponseDto.id());
+        user.setUserId(userResponseDto.id());
         log.debug("Created a new user profile for userservice with the id={}",
-                newUser.getUserId());
-        authUserRepository.save(newUser);
+                user.getUserId());
+        try {
+            authUserRepository.save(user);
+        } catch (Exception e) {
+            userClient.deleteUserInUserService(user.getUserId());
+            throw new RegistrationException("Registration failed:" + e);
+        }
     }
 
     public AuthResponseDto login(LoginRequestDto loginRequestDto){
@@ -76,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public AuthResponseDto refresh(String refreshToken){
-        Long userId = jwtService.getUserId(refreshToken);
+        Long userId = jwtService.getUserId(refreshToken, "REFRESH");
 
         AuthUser user = authUserRepository.findByUserId(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));

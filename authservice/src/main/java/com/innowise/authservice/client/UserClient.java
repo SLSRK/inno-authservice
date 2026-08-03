@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,22 +16,31 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class UserClient {
 
-    @Value("${user.service.url}")
-    private String userServiceUrl;
-
     private final RestTemplate restTemplate;
     private final JwtService jwtService;
 
     public UserResponseDto createUserInUserService(UserRequestDto userRequestDto) {
-        String url = userServiceUrl + "/api/users";
-
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtService.createAccessToken(1L, Role.ADMIN));
         HttpEntity<UserRequestDto> request = new HttpEntity<>(userRequestDto, headers);
 
         return restTemplate.postForObject(
-                url,
+                "/api/users",
                 request,
                 UserResponseDto.class);
+    }
+
+    public void deleteUserInUserService(Long id) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtService.createAccessToken(1L, Role.ADMIN));
+        HttpEntity<UserRequestDto> request = new HttpEntity<>(headers);
+
+        restTemplate.exchange(
+                "/api/users/{id}",
+                HttpMethod.DELETE,
+                request,
+                Void.class,
+                id
+        );
     }
 }

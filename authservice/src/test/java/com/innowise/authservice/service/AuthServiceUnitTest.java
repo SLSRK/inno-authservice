@@ -133,7 +133,7 @@ class AuthServiceUnitTest {
     void refresh_shouldReturnNewAccessToken() {
         AuthUser user = defaultUser();
 
-        when(jwtService.getUserId("refreshToken"))
+        when(jwtService.getUserId("refreshToken", "REFRESH"))
                 .thenReturn(1L);
         when(authUserRepository.findByUserId(1L))
                 .thenReturn(Optional.of(user));

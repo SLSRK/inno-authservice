@@ -32,7 +32,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest(classes = AuthserviceApplication.class)
+@SpringBootTest(
+        classes = AuthserviceApplication.class,
+        properties = {
+                "jwt.secret=jwt-secret-for-test-JzdWIiOiI1Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODU3NTM1MjAsImV4cC",
+                "access.expiration.mins=15",
+                "refresh.expiration.mins=60"
+        })
 @AutoConfigureMockMvc
 public class AuthIntegrationTest {
 
