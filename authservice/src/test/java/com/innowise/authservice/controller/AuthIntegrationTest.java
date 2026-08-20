@@ -50,6 +50,9 @@ public class AuthIntegrationTest {
     private static final LocalDate BIRTH_DATE = LocalDate.of(2000, 1, 1);
     private static final LocalDateTime CURRENT_DATE = LocalDateTime.now();
     private static final String TEST_EMAIL_DOMAIN = "@test.com";
+    private static final String URI_REGISTER = "/api/v1/auth/register";
+    private static final String URI_LOGIN = "/api/v1/auth/login";
+    private static final String URI_REFRESH = "/api/v1/auth/refresh";
 
     @MockitoBean
     private UserClient userClient;
@@ -94,7 +97,7 @@ public class AuthIntegrationTest {
                         CURRENT_DATE,
                         CURRENT_DATE));
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post(URI_REGISTER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequestDto)))
                 .andExpect(status().isCreated());
@@ -109,7 +112,7 @@ public class AuthIntegrationTest {
         when(userClient.createUserInUserService(any()))
                 .thenThrow(new RuntimeException("userservice unavailable"));
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post(URI_REGISTER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequestDto)))
                 .andExpect(status().isConflict());
@@ -132,14 +135,14 @@ public class AuthIntegrationTest {
                         CURRENT_DATE,
                         CURRENT_DATE));
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post(URI_REGISTER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequestDto)))
                 .andExpect(status().isCreated());
 
         LoginRequestDto loginRequestDto = new LoginRequestDto(login, PASSWORD);
 
-        String response = mockMvc.perform(post("/api/auth/login")
+        String response = mockMvc.perform(post(URI_LOGIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequestDto)))
                 .andExpect(status().isOk())
@@ -170,14 +173,14 @@ public class AuthIntegrationTest {
                         CURRENT_DATE,
                         CURRENT_DATE));
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post(URI_REGISTER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequestDto)))
                 .andExpect(status().isCreated());
 
         LoginRequestDto loginRequestDto = new LoginRequestDto(login, "WrongPassword!");
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post(URI_LOGIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequestDto)))
                 .andExpect(status().isUnauthorized());
@@ -187,7 +190,7 @@ public class AuthIntegrationTest {
     void login_shouldReturnUnauthorized_whenLoginDoesNotExist() throws Exception {
         LoginRequestDto loginRequestDto = new LoginRequestDto("non-existent-" + UUID.randomUUID(), PASSWORD);
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post(URI_LOGIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequestDto)))
                 .andExpect(status().isUnauthorized());
@@ -210,14 +213,14 @@ public class AuthIntegrationTest {
                         CURRENT_DATE,
                         CURRENT_DATE));
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post(URI_REGISTER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequestDto)))
                 .andExpect(status().isCreated());
 
         LoginRequestDto loginRequestDto = new LoginRequestDto(login, PASSWORD);
 
-        String loginResponse = mockMvc.perform(post("/api/auth/login")
+        String loginResponse = mockMvc.perform(post(URI_LOGIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequestDto)))
                 .andExpect(status().isOk())
@@ -229,7 +232,7 @@ public class AuthIntegrationTest {
 
         RefreshRequestDto refreshRequestDto = new RefreshRequestDto(loginResult.refreshToken());
 
-        String refreshResponse = mockMvc.perform(post("/api/auth/refresh")
+        String refreshResponse = mockMvc.perform(post(URI_REFRESH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(refreshRequestDto)))
                 .andExpect(status().isOk())
@@ -247,7 +250,7 @@ public class AuthIntegrationTest {
     void refresh_shouldReturnUnauthorized_whenRefreshTokenIsInvalid() throws Exception {
         RefreshRequestDto refreshRequestDto = new RefreshRequestDto("invalid-token");
 
-        mockMvc.perform(post("/api/auth/refresh")
+        mockMvc.perform(post(URI_REFRESH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(refreshRequestDto)))
                 .andExpect(status().isUnauthorized());

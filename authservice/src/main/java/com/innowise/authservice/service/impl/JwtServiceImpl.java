@@ -36,7 +36,7 @@ public class JwtServiceImpl implements JwtService {
                 .claim("type", "ACCESS")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessExpiration * 60000))
-                .signWith(secretKey)
+                .signWith(secretKey, Jwts.SIG.HS512)
                 .compact();
     }
 
@@ -46,7 +46,7 @@ public class JwtServiceImpl implements JwtService {
                 .claim("type", "REFRESH")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshExpiration * 60000))
-                .signWith(secretKey)
+                .signWith(secretKey, Jwts.SIG.HS512)
                 .compact();
     }
 

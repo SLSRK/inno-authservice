@@ -5,7 +5,6 @@ import com.innowise.authservice.model.dto.UserResponseDto;
 import com.innowise.authservice.model.entity.Role;
 import com.innowise.authservice.service.JwtService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,7 +24,7 @@ public class UserClient {
         HttpEntity<UserRequestDto> request = new HttpEntity<>(userRequestDto, headers);
 
         return restTemplate.postForObject(
-                "/api/users",
+                "/api/v1/users",
                 request,
                 UserResponseDto.class);
     }
@@ -36,7 +35,7 @@ public class UserClient {
         HttpEntity<UserRequestDto> request = new HttpEntity<>(headers);
 
         restTemplate.exchange(
-                "/api/users/{id}",
+                "/api/v1/users/{id}",
                 HttpMethod.DELETE,
                 request,
                 Void.class,
