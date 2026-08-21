@@ -3,6 +3,8 @@ package com.innowise.authservice.service;
 import com.innowise.authservice.model.dto.AuthResponseDto;
 import com.innowise.authservice.model.dto.LoginRequestDto;
 import com.innowise.authservice.model.dto.RegisterRequestDto;
+import com.innowise.authservice.model.dto.ValidateRequestDto;
+import com.innowise.authservice.model.dto.ValidateResponseDto;
 
 public interface AuthService {
     /**
@@ -24,4 +26,11 @@ public interface AuthService {
      * @return returns new access token.
      */
     AuthResponseDto refresh(String refreshToken);
+
+    /**
+     * Checks access token for validity;
+     * @param validateRequestDto request body with token;
+     * @return returns access token is valid or not.
+     */
+    ValidateResponseDto validate(ValidateRequestDto validateRequestDto);
 }

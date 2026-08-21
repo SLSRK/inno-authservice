@@ -4,6 +4,8 @@ import com.innowise.authservice.model.dto.AuthResponseDto;
 import com.innowise.authservice.model.dto.LoginRequestDto;
 import com.innowise.authservice.model.dto.RefreshRequestDto;
 import com.innowise.authservice.model.dto.RegisterRequestDto;
+import com.innowise.authservice.model.dto.ValidateRequestDto;
+import com.innowise.authservice.model.dto.ValidateResponseDto;
 import com.innowise.authservice.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +39,10 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public AuthResponseDto refresh(@Valid @RequestBody RefreshRequestDto refreshRequestDto) {
         return authService.refresh(refreshRequestDto.refreshToken());
+    }
+    @PostMapping("/validate")
+    @ResponseStatus(HttpStatus.OK)
+    public ValidateResponseDto validate (@Valid @RequestBody ValidateRequestDto validateRequestDto) {
+        return authService.validate(validateRequestDto);
     }
 }

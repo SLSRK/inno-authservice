@@ -9,6 +9,8 @@ import com.innowise.authservice.model.dto.LoginRequestDto;
 import com.innowise.authservice.model.dto.RegisterRequestDto;
 import com.innowise.authservice.model.dto.UserRequestDto;
 import com.innowise.authservice.model.dto.UserResponseDto;
+import com.innowise.authservice.model.dto.ValidateRequestDto;
+import com.innowise.authservice.model.dto.ValidateResponseDto;
 import com.innowise.authservice.model.entity.AuthUser;
 import com.innowise.authservice.model.entity.Role;
 import com.innowise.authservice.repository.AuthUserRepository;
@@ -88,5 +90,15 @@ public class AuthServiceImpl implements AuthService {
         String newAccessToken = jwtService.createAccessToken(userId, user.getRole());
 
         return new AuthResponseDto(newAccessToken, refreshToken);
+    }
+
+    public ValidateResponseDto validate(ValidateRequestDto validateRequestDto){
+        try{
+            jwtService.validateToken(validateRequestDto.token(), "ACCESS");
+            return new ValidateResponseDto(true);
+        } catch (Exception e) {
+            log.info("Invalid token: {}", e.getMessage());
+            return new ValidateResponseDto(false);
+        }
     }
 }
