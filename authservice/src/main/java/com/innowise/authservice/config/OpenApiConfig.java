@@ -13,7 +13,7 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .servers(List.of(
-                        new Server().url("/authservice"),
+                        new Server().url("/auth-service"),
                         new Server().url("/")
                 ));
     }

@@ -3,7 +3,7 @@ name: CI Pipeline (authservice)
 on:
   push:
     branches:
-      - auth-1/epic
+      - auth-2/epic
 
 jobs:
   build:
